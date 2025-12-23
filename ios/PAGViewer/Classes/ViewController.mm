@@ -21,6 +21,7 @@
 #import <libpag/PAGView.h>
 #import <libpag/PAGImageView.h>
 #import <libpag/PAGDiskCache.h>
+#import <AVFoundation/AVFoundation.h>
 
 #define SCREEN_WIDTH       [UIScreen mainScreen].bounds.size.width
 #define SCREEN_HEIGHT      [UIScreen mainScreen].bounds.size.height
@@ -133,7 +134,7 @@
         float startY = 100;
         float itemWidth = SCREEN_WIDTH / 4;
         float itemHeight = itemWidth;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 1; i++) {
             PAGImageView* pagImageView = [[PAGImageView alloc] initWithFrame:CGRectMake(itemWidth * (i % 4), (i / 4) * itemHeight + startY, itemWidth, itemHeight)];
             NSString* path = [[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"%d", i] ofType:@"pag" inDirectory:@"list"];
             [pagImageView setPath:path];
@@ -196,16 +197,20 @@
 }
 
 - (void)secondButtonClicked{
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+    }];
     if (self.pagView) {
         [self.pagView removeFromSuperview];
         [self.pagView freeCache];
         self.pagView = nil;
         [self.firstButton setBackgroundColor:[UIColor grayColor]];
     }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     if (self.pagImageViewGroup == nil) {
         [self addPAGImageViewsAndPlay];
     }
     [self.secondButton setBackgroundColor:[UIColor colorWithRed:0 green:90.0/255 blue:217.0/255 alpha:1.0]];
+    });
 }
 
 - (void)bringButtonsToFront {
